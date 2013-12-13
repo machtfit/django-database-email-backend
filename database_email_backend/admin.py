@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 from django.core.mail import message
 from django.db.models import Count
-from django.utils.functional import update_wrapper
+from functools import update_wrapper
 from database_email_backend.models import Email, Attachment
 from django.utils.translation import ugettext as _
 
@@ -27,6 +27,8 @@ class AttachmentInlineAdmin(admin.TabularInline):
     fields = ('file_link', 'mimetype',)
 
     def file_link(self, obj):
+        if obj.pk is None:
+            return u''
         url_name = '%s:%s_email_attachment' % (self.admin_site.name, self.model._meta.app_label,)
         kwargs={
             'email_id': str(obj.email_id),
@@ -62,7 +64,7 @@ class EmailAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urlpatterns = super(EmailAdmin, self).get_urls()
-        from django.conf.urls.defaults import patterns, url
+        from django.conf.urls import patterns, url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
