@@ -8,7 +8,7 @@ class Base64Field(models.TextField):
     def contribute_to_class(self, cls, name):
         if self.db_column is None:
             self.db_column = name
-        self.field_name = name + '_base64'
+        self.field_name = name
         super(Base64Field, self).contribute_to_class(cls, self.field_name)
         setattr(cls, name, property(self.get_data, self.set_data))
 
